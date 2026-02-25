@@ -36,13 +36,13 @@ async function register() {
   const section = document.getElementById("section").value;
   const email = document.getElementById("email").value;
   const rollNumber = document.getElementById("rollNumber").value;
-  const password = document.getElementById("password").value;
+  const phoneNumber = document.getElementById("phoneNumber").value;
   const needSystem = document.getElementById("needSystem").value === "true";
 
   const res = await fetch("/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, section, email, rollNumber, password, needSystem })
+    body: JSON.stringify({ name, section, email, rollNumber, phoneNumber, needSystem })
   });
 
   const data = await res.json();
@@ -51,12 +51,12 @@ async function register() {
 
 async function login() {
   const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const phoneNumber = document.getElementById("phoneNumber").value;
 
   const res = await fetch("/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, phoneNumber })
   });
 
   const data = await res.json();
@@ -149,16 +149,18 @@ async function loadAdminDashboard() {
   const users = await res.json();
 
   let html = `
-    <table>
+    <table id="participantsTable">
       <thead>
         <tr>
+          <th>Roll Number</th>
           <th>Name</th>
-          <th>Roll</th>
-          <th>Email</th>
+          <th>Section</th>
+          <th>Need System</th>
+          <th>Phone Number</th>
+          <th>GitHub Link</th>
           <th>Status</th>
-          <th>System</th>
-          <th>GitHub</th>
-          <th>Actions</th>
+          <th>Edit</th>
+          <th>Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -167,22 +169,19 @@ async function loadAdminDashboard() {
   users.forEach(user => {
     html += `
       <tr>
-        <td>${user.name}</td>
         <td>${user.rollNumber}</td>
-        <td>${user.email}</td>
-        <td>${user.status}</td>
+        <td>${user.name}</td>
+        <td>${user.section}</td>
         <td>${user.needSystem ? "Yes" : "No"}</td>
+        <td>${user.phoneNumber}</td>
         <td>
-          ${user.githubLink 
+          ${user.githubLink && user.githubLink.trim() !== "" 
             ? `<a href="${user.githubLink}" target="_blank" style="color:blue;">View</a>` 
             : "Not Submitted"}
         </td>
-        <td>
-          ${user.status === "pending"
-            ? `<button onclick="approveUser('${user._id}')">Approve</button>`
-            : ""}
-          <button onclick="deleteUser('${user._id}')" style="color:red;">Delete</button>
-        </td>
+        <td>${user.status === "approved" ? "Approved" : "Pending"}</td>
+        <td><button onclick="editUser('${user._id}')" style="color:orange;">Edit</button></td>
+        <td><button onclick="deleteUser('${user._id}')" style="color:red;">Delete</button></td>
       </tr>
     `;
   });
@@ -190,6 +189,20 @@ async function loadAdminDashboard() {
   html += `</tbody></table>`;
 
   document.getElementById("userList").innerHTML = html;
+}
+
+// Print table in landscape
+function printTable() {
+  const style = document.createElement('style');
+  style.innerHTML = `@media print { @page { size: A4 landscape; } }`;
+  document.head.appendChild(style);
+  window.print();
+  document.head.removeChild(style);
+}
+
+// Edit user (placeholder)
+function editUser(id) {
+  alert('Edit functionality coming soon for user ID: ' + id);
 }
 
 async function deleteUser(id) {

@@ -13,7 +13,7 @@ const router = express.Router();
 // ---------------------------------------------------
 router.post("/register", async (req, res) => {
     try {
-        const { name, section, email, rollNumber, needSystem } = req.body;
+        const { name, section, email, rollNumber, phoneNumber, needSystem } = req.body;
 
         // ✅ Strict Roll Number Validation
         // Allowed: A25126551001 to A25126551230
@@ -42,11 +42,13 @@ router.post("/register", async (req, res) => {
             }
         }
 
+
         const newUser = new User({
             name,
             section,
             email,
             rollNumber,
+            phoneNumber,
             needSystem,
             status: "pending",
             role: "participant"
@@ -69,7 +71,7 @@ router.post("/register", async (req, res) => {
 // ---------------------------------------------------
 router.post("/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, phoneNumber } = req.body;
 
         const user = await User.findOne({ email });
 
@@ -83,9 +85,7 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
+        if (user.phoneNumber !== phoneNumber) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
@@ -112,7 +112,7 @@ router.post("/login", async (req, res) => {
 // ---------------------------------------------------
 router.get("/dashboard", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select("-password");
+        const user = await User.findById(req.user.id);
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: "Server error" });
@@ -185,7 +185,7 @@ router.put("/approve/:id", verifyToken, verifyAdmin, async (req, res) => {
 // ---------------------------------------------------
 router.get("/all-users", verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const users = await User.find().select("-password");
+        const users = await User.find();
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: "Server error" });

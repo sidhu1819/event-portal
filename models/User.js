@@ -20,10 +20,10 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
 
-    // ✅ FIXED PASSWORD FIELD
-    password: {
+
+    phoneNumber: {
         type: String,
-        default: null
+        required: true
     },
 
     needSystem: {
