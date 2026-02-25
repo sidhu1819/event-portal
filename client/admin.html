@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  Admin Dashboard |
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="container">
+  <h3>System Slot Status</h3>
+  <p id="systemCount"></p>
+
+  <h3>All Participants</h3>
+  <div id="userList"></div>
+</div>
+
+<script src="js/script.js"></script>
+<script>
+  loadAdminDashboard();
+</script>
+
+</body>
+</html>

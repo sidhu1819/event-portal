@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  Participant Dashboard |
+  <a href="#" onclick="logout()">Logout</a>
+</nav>
+
+<div class="container">
+  <h3>Welcome</h3>
+  <div id="userData"></div>
+
+  <h3>Submit GitHub Link</h3>
+  <input type="text" id="githubLink" placeholder="Enter GitHub Repository URL">
+  <button onclick="submitGithub()">Submit</button>
+
+  <p id="message"></p>
+</div>
+
+<script src="js/script.js"></script>
+<script>
+  loadDashboard();
+</script>
+
+</body>
+</html>
