@@ -1,27 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Web AI Workshop</title>
+    <!-- Keep your original style connection -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Modern Layout Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        h2, .brand {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .login-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-field:focus {
+            border-color: #000;
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-black {
+            background: #000;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-black:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-<nav>
-  <a href="index.html">Home</a>
-</nav>
+    <!-- Simple Nav -->
+    <nav class="p-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-black text-xs">W</div>
+                <span class="brand font-extrabold text-lg tracking-tighter">WEB AI</span>
+            </a>
+            <a href="index.html" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-black transition-colors">
+                Home
+            </a>
+        </div>
+    </nav>
 
-<div class="container">
-  <h2>Login</h2>
+    <!-- Login Section -->
+    <main class="flex-1 flex items-center justify-center px-4 py-12">
+        <div class="login-card w-full max-w-4xl grid md:grid-cols-2 overflow-hidden">
+            
+            <!-- Left Side: Login Form -->
+            <div class="p-8 md:p-12 border-b md:border-b-0 md:border-r border-slate-200">
+                <div class="mb-10 text-center md:text-left">
+                    <h2 class="text-3xl font-black tracking-tight mb-2 uppercase">Login</h2>
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">CSD Event Portal</p>
+                </div>
 
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
+                <div class="space-y-6">
+                    <div>
+                        <input type="email" id="email" placeholder="Email" 
+                               class="input-field w-full px-6 py-4 rounded-2xl bg-white text-sm font-medium">
+                    </div>
 
-  <button onclick="login()">Login</button>
+                    <div>
+                        <input type="password" id="password" placeholder="Password" 
+                               class="input-field w-full px-6 py-4 rounded-2xl bg-white text-sm font-medium">
+                    </div>
 
-  <p id="message"></p>
-</div>
+                    <div class="pt-2">
+                        <!-- Calling your original function -->
+                        <button onclick="login()" class="btn-black w-full py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs">
+                            Sign In
+                        </button>
+                    </div>
 
-<script src="js/script.js"></script>
+                    <!-- Your original message paragraph -->
+                    <p id="message" class="text-center text-xs font-bold min-h-[20px]"></p>
+
+                    <!-- New Register Direction -->
+                    <div class="pt-6 border-t border-slate-100 text-center">
+                        <p class="text-xs text-slate-400 font-medium">
+                            Don't have an account? 
+                            <a href="register.html" class="text-black font-black hover:underline uppercase tracking-tighter ml-1">Register Now</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Institutional Branding -->
+            <div class="bg-slate-100 p-8 md:p-12 flex flex-col justify-center items-center text-center">
+                <div class="w-16 h-16 bg-black rounded-3xl mb-8 flex items-center justify-center shadow-lg">
+                    <i class="fas fa-university text-white text-2xl"></i>
+                </div>
+                
+                <div class="space-y-8">
+                    <div>
+                        <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Principal</h4>
+                        <p class="text-sm font-black text-black">Prof. V. Rajya Lakshmi</p>
+                    </div>
+
+                    <div class="w-8 h-px bg-slate-200 mx-auto"></div>
+
+                    <div>
+                        <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">HOD, CSD</h4>
+                        <p class="text-sm font-black text-black">Dr. S. Adinarayana</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                    Department of Computer Science <br> & Data Science (CSD)
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-8 text-center">
+        <p class="text-[9px] font-bold text-slate-300 uppercase tracking-[0.3em]">
+            ANITS Engineering College • 2026 Workshop
+        </p>
+    </footer>
+
+    <!-- Keep your original script connection at the bottom -->
+    <script src="js/script.js"></script>
 
 </body>
 </html>

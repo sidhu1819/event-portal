@@ -2,8 +2,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-// Import protection middleware
 const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
+const sendApprovalEmail = require("../utils/sendEmail");
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ const router = express.Router();
 // ---------------------------------------------------
 router.post("/register", async (req, res) => {
     try {
-        const { name, section, email, rollNumber, password, needSystem } = req.body;
+        const { name, section, email, rollNumber, needSystem } = req.body;
 
         // Roll Number Validation (Format: 23CSDxxx)
         if (!rollNumber.startsWith("23CSD")) {
@@ -38,16 +38,14 @@ router.post("/register", async (req, res) => {
             }
         }
 
-        // Hash Password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
+        // Create user with a placeholder password (or empty) until admin approves
         const newUser = new User({
             name,
             section,
             email,
             rollNumber,
-            password: hashedPassword,
-            needSystem
+            needSystem,
+            status: "pending" // Ensure status is pending by default
         });
 
         await newUser.save();
@@ -72,7 +70,7 @@ router.post("/login", async (req, res) => {
 
         // Check if approved by admin
         if (user.status !== "approved") {
-            return res.status(403).json({ message: "Wait for admin approval." });
+            return res.status(403).json({ message: "Your account has not been approved yet." });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -116,10 +114,7 @@ router.get("/dashboard", verifyToken, async (req, res) => {
 router.put("/submit-github", verifyToken, async (req, res) => {
     try {
         const { githubLink } = req.body;
-
-        if (!githubLink) {
-            return res.status(400).json({ message: "GitHub link is required" });
-        }
+        if (!githubLink) return res.status(400).json({ message: "GitHub link is required" });
 
         const user = await User.findByIdAndUpdate(
             req.user.id, 
@@ -134,23 +129,40 @@ router.put("/submit-github", verifyToken, async (req, res) => {
 });
 
 // ---------------------------------------------------
-// 5️⃣ ADMIN APPROVE USER (Protected Admin Only)
+// 5️⃣ ADMIN APPROVE USER & SEND EMAIL (Protected Admin)
 // ---------------------------------------------------
 router.put("/approve/:id", verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(
-            req.params.id, 
-            { status: "approved" },
-            { new: true }
-        );
-        
+        const user = await User.findById(req.params.id);
+
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        res.json({ message: "User approved successfully", user });
+        // Prevent re-approving (optional but recommended)
+        if (user.status === "approved") {
+            return res.status(400).json({ message: "User is already approved." });
+        }
+
+        // Generate temporary password
+        const tempPassword = Math.random().toString(36).slice(-8);
+
+        // Hash the temporary password
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+        user.password = hashedPassword;
+        user.status = "approved";
+
+        await user.save();
+
+        // Send email with credentials
+        await sendApprovalEmail(user.email, user.name, tempPassword);
+
+        res.json({ message: "User approved and email sent with login credentials" });
+
     } catch (error) {
-        res.status(500).json({ message: "Server error" });
+        console.error("Approval Error:", error);
+        res.status(500).json({ message: "Server error during approval", error });
     }
 });
 
@@ -174,6 +186,7 @@ router.get("/system-count", verifyToken, verifyAdmin, async (req, res) => {
         const count = await User.countDocuments({ needSystem: true });
         res.json({
             used: count,
+            total: 60,
             remaining: 60 - count
         });
     } catch (error) {

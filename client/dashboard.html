@@ -1,31 +1,184 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participant Dashboard | Web AI Workshop</title>
+    <!-- Keep your original style connection -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Modern Layout Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        h2, h3, .brand {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .dashboard-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            border-color: #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-field:focus {
+            border-color: #000;
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-black {
+            background: #000;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-black:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for injected userData */
+        #userData p {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        #userData strong {
+            color: #000;
+            font-weight: 800;
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-<nav>
-  Participant Dashboard |
-  <a href="#" onclick="logout()">Logout</a>
-</nav>
+    <!-- Nav -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-black rounded-xl flex items-center justify-center text-white font-black">P</div>
+                <span class="brand font-extrabold text-lg tracking-tighter">Participant Dashboard</span>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <a href="index.html" class="hidden md:block text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-black">Home</a>
+                <button onclick="logout()" class="bg-black text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
 
-<div class="container">
-  <h3>Welcome</h3>
-  <div id="userData"></div>
+    <main class="max-w-4xl mx-auto px-4 md:px-6 py-10 w-full flex-1">
+        
+        <div class="mb-10">
+            <h2 class="text-4xl font-black tracking-tight mb-2">Welcome Back</h2>
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">CSD Workshop • Feb 28, 2026</p>
+        </div>
 
-  <h3>Submit GitHub Link</h3>
-  <input type="text" id="githubLink" placeholder="Enter GitHub Repository URL">
-  <button onclick="submitGithub()">Submit</button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- User Profile Card -->
+            <div class="dashboard-card">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="fas fa-id-card text-black"></i>
+                    <h3 class="font-bold uppercase tracking-widest text-xs">Your Profile</h3>
+                </div>
+                
+                <!-- Original userData ID -->
+                <div id="userData" class="min-h-[100px] flex flex-col justify-center">
+                    <div class="animate-pulse flex space-y-3 flex-col">
+                        <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+                        <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+            </div>
 
-  <p id="message"></p>
-</div>
+            <!-- Submission Card -->
+            <div class="dashboard-card border-none bg-slate-900 text-white">
+                <div class="flex items-center gap-3 mb-6">
+                    <i class="fab fa-github text-blue-400"></i>
+                    <h3 class="font-bold uppercase tracking-widest text-xs text-slate-400">Mini-Project Submission</h3>
+                </div>
+                
+                <div class="space-y-4">
+                    <p class="text-[11px] text-slate-400 leading-relaxed">Submit your final repository URL. Once submitted, your peer mentor will review your Vibe Coding project.</p>
+                    
+                    <!-- Original githubLink input -->
+                    <input type="text" id="githubLink" placeholder="Enter GitHub Repository URL" 
+                           class="w-full px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-white text-sm focus:outline-none focus:border-blue-500 transition-all">
+                    
+                    <!-- Original submitGithub function -->
+                    <button onclick="submitGithub()" class="w-full bg-white text-black py-3 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-blue-400 transition-all">
+                        Submit Repository
+                    </button>
 
-<script src="js/script.js"></script>
-<script>
-  loadDashboard();
-</script>
+                    <!-- Original message ID -->
+                    <p id="message" class="text-center text-[10px] font-bold h-4"></p>
+                </div>
+            </div>
+
+            <!-- Guidelines Card (Full Width) -->
+            <div class="dashboard-card md:col-span-2 bg-slate-50 border-none">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Workshop Guidelines</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-xs leading-relaxed">
+                        <span class="block font-black mb-1">Peer Learning</span>
+                        Collaborate with your 2nd-year mentors for project deployment tips.
+                    </div>
+                    <div class="text-xs leading-relaxed">
+                        <span class="block font-black mb-1">Vibe Coding</span>
+                        Focus on building clean UI/UX with AI assistance. Use VS Code.
+                    </div>
+                    <div class="text-xs leading-relaxed">
+                        <span class="block font-black mb-1">Attendance</span>
+                        System slots in Lab 5 & 6 are allocated based on your login time.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="p-8 text-center">
+        <p class="text-[9px] font-bold text-slate-300 uppercase tracking-[0.3em]">
+            Department of Computer Science (Data Science) • ANITS
+        </p>
+    </footer>
+
+    <!-- Keep your original script connections -->
+    <script src="js/script.js"></script>
+    <script>
+        // Use load event to prevent ReferenceError if loadDashboard is not yet parsed
+        window.addEventListener('load', function() {
+            if (typeof loadDashboard === 'function') {
+                loadDashboard();
+            } else {
+                console.error("loadDashboard is not defined in js/script.js");
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -1,28 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Web AI Workshop</title>
+    <!-- Keep your original style connection -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Modern Layout Engine -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        h2, h3, .brand {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .dashboard-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            border-color: #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .status-badge {
+            background: #000;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Styling the dynamically injected user list */
+        #userList table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        #userList th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8;
+        }
+
+        #userList td {
+            background: #fff;
+            padding: 16px;
+            font-size: 13px;
+            border-top: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        #userList td:first-child { border-left: 1px solid #f1f5f9; border-radius: 12px 0 0 12px; }
+        #userList td:last-child { border-right: 1px solid #f1f5f9; border-radius: 0 12px 12px 0; }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-<nav>
-  Admin Dashboard |
-  <a href="#" onclick="logout()">Logout</a>
-</nav>
+    <!-- Admin Nav -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-black rounded-xl flex items-center justify-center text-white font-black">A</div>
+                <span class="brand font-extrabold text-lg tracking-tighter">Admin Dashboard</span>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <a href="index.html" class="text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-black">View Portal</a>
+                <button onclick="logout()" class="bg-black text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
 
-<div class="container">
-  <h3>System Slot Status</h3>
-  <p id="systemCount"></p>
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-10 w-full flex-1">
+        
+        <!-- Header Info -->
+        <div class="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
+            <div>
+                <span class="status-badge">Administrator Access</span>
+                <h2 class="text-4xl font-black mt-3 tracking-tight">Workshop Control</h2>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date</p>
+                <p class="text-sm font-black">28 February 2026</p>
+            </div>
+        </div>
 
-  <h3>All Participants</h3>
-  <div id="userList"></div>
-</div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Side: Stats and Info -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- System Slot Status Card -->
+                <div class="dashboard-card bg-slate-50 border-none">
+                    <div class="flex items-center gap-3 mb-6">
+                        <i class="fas fa-desktop text-black"></i>
+                        <h3 class="font-bold uppercase tracking-widest text-xs">System Slot Status</h3>
+                    </div>
+                    
+                    <!-- Original count ID -->
+                    <div id="systemCount" class="text-5xl font-black tracking-tighter mb-2">00</div>
+                    <p class="text-xs text-slate-500 font-medium">Slots currently occupied in Lab 5 & 6.</p>
+                </div>
 
-<script src="js/script.js"></script>
-<script>
-  loadAdminDashboard();
-</script>
+                <!-- Admin Info Card -->
+                <div class="dashboard-card border-slate-100">
+                    <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Department Oversight</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Principal</p>
+                            <p class="text-sm font-bold">Prof. V. Rajya Lakshmi</p>
+                        </div>
+                        <div class="w-8 h-px bg-slate-100"></div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">HOD, CSD</p>
+                            <p class="text-sm font-bold">Dr. S. Adinarayana</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Participant Table -->
+            <div class="lg:col-span-2">
+                <div class="dashboard-card h-full">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-xl font-black uppercase tracking-tight">All Participants</h3>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Registry</div>
+                    </div>
+                    
+                    <!-- Original userList ID where your JS injects data -->
+                    <div id="userList" class="overflow-x-auto min-h-[400px]">
+                        <!-- Content will be injected by loadAdminDashboard() -->
+                        <div class="flex items-center justify-center py-20 text-slate-300">
+                            <i class="fas fa-spinner fa-spin mr-3"></i> Loading registry...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="p-8 text-center border-t border-slate-50">
+        <p class="text-[9px] font-bold text-slate-300 uppercase tracking-[0.3em]">
+            Internal Administrative Panel • CSD ANITS
+        </p>
+    </footer>
+
+    <!-- Keep your original script connections -->
+    <script src="js/script.js"></script>
+    <script>
+        // Ensure the external script has finished loading/parsing before calling the function
+        window.addEventListener('load', function() {
+            if (typeof loadAdminDashboard === 'function') {
+                loadAdminDashboard();
+            } else {
+                console.error("ReferenceError: loadAdminDashboard is not defined. Please ensure 'js/script.js' is correctly loaded and contains this function.");
+                
+                // Optional: Display error message in the UI for debugging
+                const userList = document.getElementById('userList');
+                if (userList) {
+                    userList.innerHTML = `
+                        <div class="p-8 text-center bg-red-50 text-red-600 rounded-2xl border border-red-100">
+                            <i class="fas fa-exclamation-triangle mb-2 text-2xl"></i>
+                            <p class="text-xs font-bold uppercase tracking-widest">Dashboard Error</p>
+                            <p class="text-sm mt-1">Unable to load dashboard logic. Ensure script.js is accessible.</p>
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
 
 </body>
 </html>
