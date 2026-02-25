@@ -1,3 +1,36 @@
+// Admin: Send notification
+async function sendNotification() {
+  const token = localStorage.getItem("token");
+  const message = document.getElementById("notificationMessage").value.trim();
+  const statusDiv = document.getElementById("notificationStatus");
+  if (!message) {
+    statusDiv.innerText = "Message cannot be empty.";
+    statusDiv.style.color = "red";
+    return;
+  }
+  try {
+    const res = await fetch("/api/notifications/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token
+      },
+      body: JSON.stringify({ message })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      statusDiv.innerText = "Notification sent!";
+      statusDiv.style.color = "green";
+      document.getElementById("notificationMessage").value = "";
+    } else {
+      statusDiv.innerText = data.error || "Failed to send notification.";
+      statusDiv.style.color = "red";
+    }
+  } catch (err) {
+    statusDiv.innerText = "Server error.";
+    statusDiv.style.color = "red";
+  }
+}
 async function register() {
   const name = document.getElementById("name").value;
   const section = document.getElementById("section").value;

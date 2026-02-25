@@ -4,7 +4,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 
+
 const authRoutes = require("./routes/auth");
+const notificationRoutes = require("./routes/notification");
 
 const app = express();
 
@@ -22,7 +24,9 @@ mongoose.connect(process.env.MONGO_URI)
 app.use(express.static(path.join(__dirname, "client")));
 
 // 4️⃣ API ROUTES
+
 app.use("/api", authRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // 5️⃣ FALLBACK ROUTE
 app.get("/", (req, res) => {

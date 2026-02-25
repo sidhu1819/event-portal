@@ -120,6 +120,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
+
             <!-- LEFT SIDE PANEL -->
             <div class="lg:col-span-1 space-y-6 no-print">
                 <div class="dashboard-card bg-slate-50">
@@ -130,6 +131,16 @@
                     <p class="text-xs text-slate-500 mt-2">
                         Slots currently occupied.
                     </p>
+                </div>
+
+                <!-- Notification Sender -->
+                <div class="dashboard-card bg-slate-50">
+                    <h3 class="font-bold uppercase tracking-widest text-xs mb-4">
+                        Send Notification
+                    </h3>
+                    <textarea id="notificationMessage" rows="3" class="w-full border rounded p-2 mb-2" placeholder="Type your notification..."></textarea>
+                    <button onclick="sendNotification()" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest w-full">Send</button>
+                    <div id="notificationStatus" class="text-xs mt-2"></div>
                 </div>
             </div>
 
