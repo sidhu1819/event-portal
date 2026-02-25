@@ -15,15 +15,15 @@ router.post("/register", async (req, res) => {
     try {
         const { name, section, email, rollNumber, needSystem } = req.body;
 
-        // Roll number validation (Only 23CSD001 - 23CSD120)
-        if (!rollNumber.startsWith("A25126551")) {
-            return res.status(400).json({ message: "Only CSD 1st year allowed" });
-        }
+        // ✅ Strict Roll Number Validation
+        // Allowed: A24126551001 to A24126551230
 
-        const numberPart = parseInt(rollNumber.substring(5));
+        const rollRegex = /^A24126551(00[1-9]|0[1-9][0-9]|1[0-9][0-9]|2[0-2][0-9]|230)$/;
 
-        if (numberPart < 1 || numberPart > 230) {
-            return res.status(400).json({ message: "Roll number out of allowed range" });
+        if (!rollRegex.test(rollNumber)) {
+            return res.status(400).json({
+                message: "Invalid roll number. Only CSD 1st year allowed."
+            });
         }
 
         // Check existing user
@@ -59,10 +59,10 @@ router.post("/register", async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+        console.error("Register Error:", error);
+        res.status(500).json({ message: "Server error during registration" });
     }
 });
-
 
 // ---------------------------------------------------
 // 2️⃣ LOGIN ROUTE
