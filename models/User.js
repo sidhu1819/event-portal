@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    password: {
+        type: String,
+        required: false // Only required after approval
+    },
     role: {
         type: String,
         default: "participant"

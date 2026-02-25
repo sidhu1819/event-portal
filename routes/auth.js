@@ -71,7 +71,7 @@ router.post("/register", async (req, res) => {
 // ---------------------------------------------------
 router.post("/login", async (req, res) => {
     try {
-        const { email, phoneNumber } = req.body;
+        const { email, password } = req.body;
 
         const user = await User.findOne({ email });
 
@@ -85,7 +85,12 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        if (user.phoneNumber !== phoneNumber) {
+        if (!user.password) {
+            return res.status(400).json({ message: "No password set for this user. Please contact admin." });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
