@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Notification = require('../models/Notification');
-const { isAdmin } = require('../middleware/authMiddleware');
+const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 
 // Admin sends a notification
-router.post('/send', isAdmin, async (req, res) => {
+router.post('/send', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const { message } = req.body;
     if (!message) return res.status(400).json({ error: 'Message is required' });
