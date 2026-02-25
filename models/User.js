@@ -19,10 +19,13 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+
+    // ✅ FIXED PASSWORD FIELD
     password: {
         type: String,
-        required: true
+        default: null
     },
+
     needSystem: {
         type: Boolean,
         default: false

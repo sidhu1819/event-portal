@@ -101,39 +101,76 @@ async function loadAdminDashboard() {
 
   // Load system count
   const countRes = await fetch("/api/system-count", {
-    headers: { "Authorization": token }
+    headers: { Authorization: token }
   });
-
   const countData = await countRes.json();
-  document.getElementById("systemCount").innerText =
-    `Used: ${countData.used} | Remaining: ${countData.remaining}`;
 
-  // Load all users
+  document.getElementById("systemCount").innerText =
+    `${countData.used} / ${countData.total}`;
+
+  // Load users
   const res = await fetch("/api/all-users", {
-    headers: { "Authorization": token }
+    headers: { Authorization: token }
   });
 
   const users = await res.json();
 
-  let html = "";
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>System</th>
+          <th>GitHub</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
 
   users.forEach(user => {
     html += `
-      <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
-        <p><strong>${user.name}</strong></p>
-        <p>Email: ${user.email}</p>
-        <p>Roll: ${user.rollNumber}</p>
-        <p>Status: ${user.status}</p>
-        <p>Need System: ${user.needSystem}</p>
-        <p>GitHub: ${user.githubLink || "Not Submitted"}</p>
-        ${user.status === "pending"
-          ? `<button onclick="approveUser('${user._id}')">Approve</button>`
-          : ""}
-      </div>
+      <tr>
+        <td>${user.name}</td>
+        <td>${user.rollNumber}</td>
+        <td>${user.email}</td>
+        <td>${user.status}</td>
+        <td>${user.needSystem ? "Yes" : "No"}</td>
+        <td>
+          ${user.githubLink 
+            ? `<a href="${user.githubLink}" target="_blank" style="color:blue;">View</a>` 
+            : "Not Submitted"}
+        </td>
+        <td>
+          ${user.status === "pending"
+            ? `<button onclick="approveUser('${user._id}')">Approve</button>`
+            : ""}
+          <button onclick="deleteUser('${user._id}')" style="color:red;">Delete</button>
+        </td>
+      </tr>
     `;
   });
 
+  html += `</tbody></table>`;
+
   document.getElementById("userList").innerHTML = html;
+}
+
+async function deleteUser(id) {
+  const token = localStorage.getItem("token");
+
+  const confirmDelete = confirm("Are you sure you want to delete this participant?");
+  if (!confirmDelete) return;
+
+  await fetch(`/api/delete/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: token }
+  });
+
+  loadAdminDashboard();
 }
 
 async function approveUser(id) {
