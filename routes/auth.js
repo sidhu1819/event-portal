@@ -16,9 +16,9 @@ router.post("/register", async (req, res) => {
         const { name, section, email, rollNumber, needSystem } = req.body;
 
         // ✅ Strict Roll Number Validation
-        // Allowed: A24126551001 to A24126551230
+        // Allowed: A25126551001 to A25126551230
 
-        const rollRegex = /^A24126551(00[1-9]|0[1-9][0-9]|1[0-9][0-9]|2[0-2][0-9]|230)$/;
+        const rollRegex = /^A25126551(00[1-9]|0[1-9][0-9]|1[0-9][0-9]|2[0-2][0-9]|230)$/;
 
         if (!rollRegex.test(rollNumber)) {
             return res.status(400).json({
