@@ -2,6 +2,9 @@ const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 const sendApprovalEmail = async (toEmail, name, tempPassword) => {
     try {
+
+        console.log("Brevo Key:", process.env.BREVO_API_KEY);
+
         const client = SibApiV3Sdk.ApiClient.instance;
 
         const apiKey = client.authentications['api-key'];

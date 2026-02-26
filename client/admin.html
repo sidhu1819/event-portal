@@ -90,6 +90,10 @@
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lab Capacity</p>
                     <p id="systemCount" class="text-xl font-black text-blue-600">Loading...</p>
                 </div>
+                <div class="text-right bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Participants</p>
+                    <p id="participantCount" class="text-xl font-black text-green-600">Loading...</p>
+                </div>
             </div>
         </div>
 
@@ -244,6 +248,7 @@
 
                 const res = await fetch("/api/all-users", { headers: { "Authorization": token } });
                 allUsers = await res.json();
+                document.getElementById("participantCount").innerText = allUsers.length;
                 renderUsers(allUsers);
             } catch (err) {
                 console.error("Dashboard Load Error:", err);
@@ -330,7 +335,7 @@
             }
 
             try {
-                const res = await fetch(`/api/update/${id}`, {
+                const res = await fetch(`/api/edit/${id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
