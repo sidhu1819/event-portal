@@ -1,52 +1,51 @@
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
-// Verify transporter once at startup
-transporter.verify((error, success) => {
-    if (error) {
-        console.error("SMTP Connection Error:", error);
-    } else {
-        console.log("SMTP Server Ready ✅");
-    }
-});
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 const sendApprovalEmail = async (toEmail, name, tempPassword) => {
     try {
-        const mailOptions = {
-            from: `"Event Portal" <${process.env.EMAIL_USER}>`,
-            to: toEmail,
+        const client = SibApiV3Sdk.ApiClient.instance;
+
+        const apiKey = client.authentications['api-key'];
+        apiKey.apiKey = process.env.BREVO_API_KEY;
+
+        const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+
+        const sender = {
+            email: "832siddhartha@gmail.com",
+            name: "Event Portal"
+        };
+
+        const receivers = [
+            {
+                email: toEmail,
+                name: name
+            }
+        ];
+
+        await tranEmailApi.sendTransacEmail({
+            sender,
+            to: receivers,
             subject: "Event Portal - Approval Confirmation",
-            html: `
+            htmlContent: `
                 <h2>Congratulations ${name} 🎉</h2>
                 <p>Your registration has been approved.</p>
                 <p><strong>Login Credentials:</strong></p>
                 <p>Email: ${toEmail}</p>
                 <p>Temporary Password: ${tempPassword}</p>
-                <p>Please login and change your password after logging in.</p>
+                <p>Please login and change your password.</p>
                 <br>
-                <a href="https://your-render-link.onrender.com/login.html">
-                    Click here to Login
+                <a href="https://event-portal-5ftl.onrender.com/login.html">
+                Click here to Login
                 </a>
-                <br><br>
-                <b>Join our WhatsApp Group for updates and support:</b><br>
                 <a href="https://chat.whatsapp.com/K4e3EXbj6y44q0KuAYsjp7?mode=gi_t" target="_blank">
                     Join WhatsApp Group
                 </a>
             `
-        };
+        });
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully:", info.response);
+        console.log("Email sent via Brevo successfully");
 
     } catch (error) {
-        console.error("Email sending failed:", error);
+        console.error("Brevo email sending failed:", error.response?.body || error);
         throw error;
     }
 };
