@@ -5,8 +5,7 @@ const User = require("../models/User");
 const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 const sendApprovalEmail = require("../utils/sendEmail");
 
-const router = express.Router();
-
+const router = express.Router();   // ✅ MUST BE BEFORE ROUTES
 
 // ---------------------------------------------------
 // 1️⃣ REGISTER ROUTE
@@ -14,9 +13,6 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
     try {
         const { name, section, email, rollNumber, phoneNumber, needSystem } = req.body;
-
-        // ✅ Strict Roll Number Validation
-        // Allowed: A25126551001 to A25126551230
 
         const rollRegex = /^A25126551(00[1-9]|0[1-9][0-9]|1[0-9][0-9]|2[0-2][0-9]|230)$/;
 
@@ -26,13 +22,11 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        // Check existing user
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "Email already registered" });
         }
 
-        // System limit (Max 60)
         if (needSystem) {
             const systemUsers = await User.countDocuments({ needSystem: true });
             if (systemUsers >= 60) {
@@ -41,7 +35,6 @@ router.post("/register", async (req, res) => {
                 });
             }
         }
-
 
         const newUser = new User({
             name,
@@ -66,6 +59,7 @@ router.post("/register", async (req, res) => {
     }
 });
 
+
 // ---------------------------------------------------
 // 2️⃣ LOGIN ROUTE
 // ---------------------------------------------------
@@ -75,9 +69,7 @@ router.post("/login", async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        if (!user) {
-            return res.status(400).json({ message: "User not found" });
-        }
+        if (!user) return res.status(400).json({ message: "User not found" });
 
         if (user.status !== "approved") {
             return res.status(403).json({
@@ -90,9 +82,7 @@ router.post("/login", async (req, res) => {
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
         const token = jwt.sign(
             { id: user._id, role: user.role },
@@ -153,30 +143,22 @@ router.put("/approve/:id", verifyToken, verifyAdmin, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        if (!user) return res.status(404).json({ message: "User not found" });
 
         if (user.status === "approved") {
             return res.status(400).json({ message: "User already approved" });
         }
 
-        // Generate temporary password
         const tempPassword = Math.random().toString(36).slice(-8);
-
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
         user.password = hashedPassword;
         user.status = "approved";
-
         await user.save();
 
-        // Send email
         await sendApprovalEmail(user.email, user.name, tempPassword);
 
-        res.json({
-            message: "User approved and email sent successfully"
-        });
+        res.json({ message: "User approved and email sent successfully" });
 
     } catch (error) {
         console.error("Approval Error:", error);
@@ -216,8 +198,9 @@ router.get("/system-count", verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
+
 // ---------------------------------------------------
-// 8️⃣ DELETE USER (Admin Only)
+// 8️⃣ DELETE USER
 // ---------------------------------------------------
 router.delete("/delete/:id", verifyToken, verifyAdmin, async (req, res) => {
     try {
@@ -225,6 +208,40 @@ router.delete("/delete/:id", verifyToken, verifyAdmin, async (req, res) => {
         res.json({ message: "User deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+// ---------------------------------------------------
+// 9️⃣ RESEND APPROVAL EMAILS (ADMIN ONLY)
+// ---------------------------------------------------
+router.post("/resend-approval-emails", verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const users = await User.find({ status: "approved" });
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const user of users) {
+            const tempPassword = Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcrypt.hash(tempPassword, 10);
+            user.password = hashedPassword;
+            await user.save();
+
+            try {
+                await sendApprovalEmail(user.email, user.name, tempPassword);
+                successCount++;
+            } catch (err) {
+                failCount++;
+            }
+        }
+
+        res.json({
+            message: `Resent emails to ${successCount} users. Failed for ${failCount} users.`
+        });
+
+    } catch (error) {
+        console.error("Resend Approval Emails Error:", error);
+        res.status(500).json({ message: "Server error during resending emails" });
     }
 });
 
