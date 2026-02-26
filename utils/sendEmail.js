@@ -2,11 +2,15 @@ const nodemailer = require("nodemailer");
 
 const sendApprovalEmail = async (toEmail, name, tempPassword) => {
     try {
+
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         });
 
@@ -25,10 +29,20 @@ const sendApprovalEmail = async (toEmail, name, tempPassword) => {
                 <a href="https://your-render-link.onrender.com/login.html">
                 Click here to Login
                 </a>
+                <br><br>
+                <b>Join our WhatsApp Group for updates and support:</b><br>
+                <a href="https://chat.whatsapp.com/K4e3EXbj6y44q0KuAYsjp7?mode=gi_t" target="_blank" style="color:#25D366; font-weight:bold;">Join WhatsApp Group</a>
             `
         };
 
-        await transporter.sendMail(mailOptions);
+
+        await transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                console.error("Nodemailer sendMail error:", err);
+            } else {
+                console.log("Email sent:", info.response);
+            }
+        });
 
     } catch (error) {
         console.log("Email error:", error);
