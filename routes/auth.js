@@ -12,6 +12,23 @@ const router = express.Router();   // ✅ MUST BE BEFORE ROUTES
 // ---------------------------------------------------
 router.post("/register", async (req, res) => {
     try {
+
+        // 🔒 Stop registration after 7:00 PM IST
+        const now = new Date();
+        const istTime = new Date(
+            now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+        );
+
+        const currentHour = istTime.getHours();
+        const currentMinutes = istTime.getMinutes();
+
+        // Stop after 19:00 (7 PM)
+        if (currentHour > 19 || (currentHour === 19 && currentMinutes > 0)) {
+            return res.status(403).json({
+                message: "Registration closed. Registrations are allowed only until 7:00 PM."
+            });
+        }
+
         const { name, section, email, rollNumber, phoneNumber, needSystem } = req.body;
 
         const rollRegex = /^A25126551(00[1-9]|0[1-9][0-9]|1[0-9][0-9]|2[0-2][0-9]|230)$/;
