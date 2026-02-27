@@ -137,34 +137,47 @@ router.put("/submit-github", verifyToken, async (req, res) => {
 
 
 // ---------------------------------------------------
-// 5️⃣ ADMIN APPROVE USER + SEND EMAIL
+// 5️⃣ ADMIN APPROVE USER + SAFE PASSWORD HANDLING
 // ---------------------------------------------------
 router.put("/approve/:id", verifyToken, verifyAdmin, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
 
-        if (!user) return res.status(404).json({ message: "User not found" });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
         if (user.status === "approved") {
             return res.status(400).json({ message: "User already approved" });
         }
 
-        const tempPassword = Math.random().toString(36).slice(-8);
-        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+        let tempPassword = null;
 
-        user.password = hashedPassword;
+        // 🔥 Only generate password if user does NOT already have one
+        if (!user.password) {
+            tempPassword = Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcrypt.hash(tempPassword, 10);
+            user.password = hashedPassword;
+        }
+
+        // Only change status
         user.status = "approved";
+
         await user.save();
 
-        await sendApprovalEmail(user.email, user.name, tempPassword);
+        // 🔥 Send email ONLY if password was newly created
+        if (tempPassword) {
+            await sendApprovalEmail(user.email, user.name, tempPassword);
+        }
 
-        res.json({ message: "User approved and email sent successfully" });
+        res.json({ message: "User approved successfully" });
 
     } catch (error) {
         console.error("Approval Error:", error);
         res.status(500).json({ message: "Server error during approval" });
     }
 });
+
 
 
 // ---------------------------------------------------
